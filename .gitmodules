@@ -1,0 +1,12 @@
+[submodule "pico-arduino-compat"]
+	path = pico-arduino-compat
+	url = git@github.com:fhdm-dev/pico-arduino-compat.git
+[submodule "i2cdevlib"]
+	path = i2cdevlib
+	url = git@github.com:jrowberg/i2cdevlib.git
+[submodule "Arduino/Adafruit_BusIO"]
+	path = Arduino/Adafruit_BusIO
+	url = git@github.com:adafruit/Adafruit_BusIO.git
+[submodule "Arduino/Adafruit_BMP3XX"]
+	path = Arduino/Adafruit_BMP3XX
+	url = git@github.com:adafruit/Adafruit_BMP3XX.git
