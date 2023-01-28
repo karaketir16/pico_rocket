@@ -40,7 +40,7 @@ int main_scan();
 // specific I2C addresses may be passed as a parameter here
 // AD0 low = 0x68 (default for InvenSense evaluation board)
 // AD0 high = 0x69
-MPU6050 accelgyro;
+// MPU6050 accelgyro;
 // MPU6050 accelgyro(0x69); // <-- use for AD0 high
 // MPU6050 accelgyro(0x68, &Wire1); // <-- use for AD0 low, but 2nd Wire (TWI/I2C) object
 

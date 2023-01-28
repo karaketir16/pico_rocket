@@ -10,3 +10,12 @@
 [submodule "Arduino/Adafruit_BMP3XX"]
 	path = Arduino/Adafruit_BMP3XX
 	url = git@github.com:adafruit/Adafruit_BMP3XX.git
+[submodule "pico-sdk"]
+	path = pico-sdk
+	url = git@github.com:raspberrypi/pico-sdk.git
+[submodule "Arduino/SparkFun_u-blox_GNSS_Arduino_Library"]
+	path = Arduino/SparkFun_u-blox_GNSS_Arduino_Library
+	url = git@github.com:sparkfun/SparkFun_u-blox_GNSS_Arduino_Library.git
+[submodule "Arduino/TinyGPSPlus"]
+	path = Arduino/TinyGPSPlus
+	url = git@github.com:mikalhart/TinyGPSPlus.git
