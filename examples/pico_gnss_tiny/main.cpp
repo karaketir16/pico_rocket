@@ -8,6 +8,30 @@ static const uint32_t GPSBaud = 115200;
 
 #define ss Serial1
 
+void push_data(const void* data, uint16_t len){
+    uint16_t wordsCount = ((len + 1) / 4);
+
+    const uint32_t *words = (const uint32_t *)data;
+
+    for (size_t i = 0; i < wordsCount; i++)
+    {
+        multicore_fifo_push_blocking(words[i]);
+    }
+    
+}
+
+
+void pop_data(void* data, uint16_t len){
+    uint16_t wordsCount = ((len + 1) / 4);
+
+    uint32_t *words = (uint32_t *)data;
+
+    for (size_t i = 0; i < wordsCount; i++)
+    {
+        words[i] = multicore_fifo_pop_blocking();
+    }
+}
+
 // The TinyGPSPlus object
 TinyGPSPlus gps;
 
@@ -29,13 +53,23 @@ void setup()
 
 void loop()
 {
-  // This sketch displays information every time a new sentence is correctly encoded.
+  // This send information every time centisecond changes,  (that cause 100ms delay, not important for this project)
+  auto lastCentiSecond = gps.time.centisecond();
   while (ss.available() > 0){
     char c = ss.read();
-    if (gps.encode(c))
-      displayInfo();
+    if (gps.encode(c) && lastCentiSecond != gps.time.centisecond()){
+        lastCentiSecond = gps.time.centisecond();
+        uint32_t t0, t1;
+        t0 = time_us_32();
+        push_data(&gps, sizeof(gps));
+        t1 = time_us_32();
+        printf("\nPush Time (%dus)\n", t1 - t0);
+
+        //push time, 10us average 
+    }
+      
     
-    Serial.print(c);
+    // Serial.print(c);
   }
 
 
@@ -47,14 +81,15 @@ void loop()
   }
 }
 
-void displayInfo()
+void displayInfo(TinyGPSPlus gps__)
 {
+  Serial.println(F("From core0: ")); 
   Serial.print(F("Location: ")); 
-  if (gps.location.isValid())
+  if (gps__.location.isValid())
   {
-    Serial.print(gps.location.lat(), 6);
+    Serial.print(gps__.location.lat(), 6);
     Serial.print(F(","));
-    Serial.print(gps.location.lng(), 6);
+    Serial.print(gps__.location.lng(), 6);
   }
   else
   {
@@ -62,13 +97,13 @@ void displayInfo()
   }
 
   Serial.print(F("  Date/Time: "));
-  if (gps.date.isValid())
+  if (gps__.date.isValid())
   {
-    Serial.print(gps.date.month());
+    Serial.print(gps__.date.month());
     Serial.print(F("/"));
-    Serial.print(gps.date.day());
+    Serial.print(gps__.date.day());
     Serial.print(F("/"));
-    Serial.print(gps.date.year());
+    Serial.print(gps__.date.year());
   }
   else
   {
@@ -76,19 +111,19 @@ void displayInfo()
   }
 
   Serial.print(F(" "));
-  if (gps.time.isValid())
+  if (gps__.time.isValid())
   {
-    if (gps.time.hour() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.hour());
+    if (gps__.time.hour() < 10) Serial.print(F("0"));
+    Serial.print(gps__.time.hour());
     Serial.print(F(":"));
-    if (gps.time.minute() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.minute());
+    if (gps__.time.minute() < 10) Serial.print(F("0"));
+    Serial.print(gps__.time.minute());
     Serial.print(F(":"));
-    if (gps.time.second() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.second());
+    if (gps__.time.second() < 10) Serial.print(F("0"));
+    Serial.print(gps__.time.second());
     Serial.print(F("."));
-    if (gps.time.centisecond() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.centisecond());
+    if (gps__.time.centisecond() < 10) Serial.print(F("0"));
+    Serial.print(gps__.time.centisecond());
   }
   else
   {
@@ -101,8 +136,16 @@ void displayInfo()
 
 #include <pico/stdio.h>
 #include <hardware/uart.h>
+#include "pico/multicore.h"
 #include "tusb.h"
 
+void core1_entry(){
+  setup();
+  while (1){
+    loop();
+  }
+  
+}
 
 int main(){
     stdio_init_all();   
@@ -116,8 +159,13 @@ int main(){
     t1 = time_us_32();
     printf("\nusb host detected! (%dus)\n", t1 - t0);
 
-    setup();
+    multicore_launch_core1(core1_entry);
     while(1){
-        loop();
+        t0 = time_us_32();
+        TinyGPSPlus gps__;
+        pop_data(&gps__, sizeof(gps__));
+        displayInfo(gps__);
+        t1 = time_us_32();
+        // printf("\nPop Time passes (%dus)\n", t1 - t0);
     }
 }
