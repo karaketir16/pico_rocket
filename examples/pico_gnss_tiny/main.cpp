@@ -39,6 +39,8 @@ TinyGPSPlus gps;
 
 void displayInfo();
 
+
+long lastTime = 0;
 void setup()
 {
   Serial.begin(115200);
@@ -49,30 +51,23 @@ void setup()
   Serial.print(F("Testing TinyGPSPlus library v. ")); Serial.println(TinyGPSPlus::libraryVersion());
   Serial.println(F("by Mikal Hart"));
   Serial.println();
+
+  lastTime = millis();
 }
 
 void loop()
 {
   // This send information every time centisecond changes,  (that cause 100ms delay, not important for this project)
-  auto lastCentiSecond = gps.time.centisecond();
+  
   while (ss.available() > 0){
     char c = ss.read();
-    if (gps.encode(c) && lastCentiSecond != gps.time.centisecond()){
-        lastCentiSecond = gps.time.centisecond();
-        uint32_t t0, t1;
-        t0 = time_us_32();
-        push_data(&gps, sizeof(gps));
-        t1 = time_us_32();
-        printf("\nPush Time (%dus)\n", t1 - t0);
-
-        //push time, 10us average 
-    }
-      
-    
-    // Serial.print(c);
+    gps.encode(c);
   }
 
-
+  if((millis() - lastTime) >= 100){
+    lastTime = millis();
+    push_data(&gps, sizeof(gps));
+  }
 
   if (millis() > 5000 && gps.charsProcessed() < 10)
   {
@@ -150,6 +145,8 @@ void core1_entry(){
 int main(){
     stdio_init_all();   
 
+    multicore_launch_core1(core1_entry);
+
     uint32_t t0, t1;
 
     t0 = time_us_32();
@@ -159,7 +156,7 @@ int main(){
     t1 = time_us_32();
     printf("\nusb host detected! (%dus)\n", t1 - t0);
 
-    multicore_launch_core1(core1_entry);
+    
     while(1){
         t0 = time_us_32();
         TinyGPSPlus gps__;
