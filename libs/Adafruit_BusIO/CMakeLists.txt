@@ -15,7 +15,7 @@ target_include_directories(adafruit-busio INTERFACE
 )
 
 if (NOT TARGET arduino-compat)
-    add_subdirectory(../../arduino-compat build_arduino-compat)
+  add_subdirectory(../../pico-arduino-compat/arduino-compat build_arduino-compat)
 endif()
 
 target_link_libraries(adafruit-busio INTERFACE

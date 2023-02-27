@@ -13,7 +13,7 @@ target_include_directories(adafruit-bmp3xx INTERFACE
 )
 
 if (NOT TARGET arduino-compat)
-    add_subdirectory(../../arduino-compat build_arduino-compat)
+    add_subdirectory(../../pico-arduino-compat/arduino-compat build_arduino-compat)
 endif()
 
 if (NOT TARGET adafruit-busio)

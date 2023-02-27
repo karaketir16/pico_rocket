@@ -19,3 +19,12 @@
 [submodule "Arduino/TinyGPSPlus"]
 	path = Arduino/TinyGPSPlus
 	url = git@github.com:mikalhart/TinyGPSPlus.git
+[submodule "Arduino/LoRa_E32_Series_Library"]
+	path = Arduino/LoRa_E32_Series_Library
+	url = git@github.com:xreef/LoRa_E32_Series_Library.git
+[submodule "Arduino/Adafruit_MPU6050"]
+	path = Arduino/Adafruit_MPU6050
+	url = git@github.com:adafruit/Adafruit_MPU6050.git
+[submodule "Arduino/Adafruit_Sensor"]
+	path = Arduino/Adafruit_Sensor
+	url = git@github.com:adafruit/Adafruit_Sensor.git
