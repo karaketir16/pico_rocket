@@ -12,7 +12,7 @@ project(roket_sensor_test)
 pico_sdk_init()
 
 
-add_subdirectory( "${CMAKE_CURRENT_LIST_DIR}/../libs/mpu6050"
+add_subdirectory( "${CMAKE_CURRENT_LIST_DIR}/../libs/Adafruit_MPU6050"
     build_mpu6050
 )
 add_subdirectory( "${CMAKE_CURRENT_LIST_DIR}/../libs/Adafruit_BMP3XX"
@@ -52,7 +52,8 @@ endif()
 
 
 target_link_libraries(roket_sensor_test 
-    mpu6050
+    adafruit-mpu6050
     adafruit-bmp3xx
     hardware_i2c
 )
+
