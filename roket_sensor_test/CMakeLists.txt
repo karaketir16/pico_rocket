@@ -77,6 +77,35 @@ if (TARGET tinyusb_device)
     # create map/bin/hex/uf2 file etc.
     pico_add_extra_outputs(roket_sensor_receive)
 
+
+
+
+
+
+
+    add_executable(roket_alg_test
+        algorithm_test.cpp
+    )
+
+    if (NOT TARGET arduino-compat)
+        add_subdirectory(../../pico-arduino-compat/arduino-compat build_arduino-compat)
+    endif()
+
+    # pull in common dependencies
+    target_link_libraries(roket_alg_test 
+        pico_stdlib
+        pico_multicore
+        arduino-compat 
+    )
+
+
+    # enable usb output, disable uart output
+    pico_enable_stdio_usb(roket_alg_test 1)
+    pico_enable_stdio_uart(roket_alg_test 0)
+
+    # create map/bin/hex/uf2 file etc.
+    pico_add_extra_outputs(roket_alg_test)
+
     # add url via pico_set_program_url
     # example_auto_set_url(hello_world)
 elseif(PICO_ON_DEVICE)
