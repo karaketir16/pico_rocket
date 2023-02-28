@@ -19,30 +19,63 @@ add_subdirectory( "${CMAKE_CURRENT_LIST_DIR}/../libs/Adafruit_BMP3XX"
     build_bmp3xx
 )
 
-# add_subdirectory(/home/karaketir16/proj/pico-arduino-compat/libs/adafruit-bmp3xx-library/
-#     build_bmp3xx
-# )
-# rest of your project
+add_subdirectory( "${CMAKE_CURRENT_LIST_DIR}/../libs/u_blox"
+    build_u_blox
+)
 
 
 if (TARGET tinyusb_device)
-    add_executable(roket_sensor_test
-            main.cpp
+
+    add_executable(roket_sensor_transmit
+            main_transmit.cpp
             )
 
     # pull in common dependencies
-    target_link_libraries(roket_sensor_test 
+    target_link_libraries(roket_sensor_transmit 
         pico_stdlib
         pico_multicore
+    )
+
+    target_link_libraries(roket_sensor_transmit 
+        adafruit-mpu6050
+        adafruit-bmp3xx
+        hardware_i2c
+        u_blox
     )
     
 
     # enable usb output, disable uart output
-    pico_enable_stdio_usb(roket_sensor_test 1)
-    pico_enable_stdio_uart(roket_sensor_test 0)
+    pico_enable_stdio_usb(roket_sensor_transmit 1)
+    pico_enable_stdio_uart(roket_sensor_transmit 0)
 
     # create map/bin/hex/uf2 file etc.
-    pico_add_extra_outputs(roket_sensor_test)
+    pico_add_extra_outputs(roket_sensor_transmit)
+
+
+
+
+    add_executable(roket_sensor_receive
+        main_receive.cpp
+    )
+
+    if (NOT TARGET arduino-compat)
+        add_subdirectory(../../pico-arduino-compat/arduino-compat build_arduino-compat)
+    endif()
+
+    # pull in common dependencies
+    target_link_libraries(roket_sensor_receive 
+        pico_stdlib
+        pico_multicore
+        arduino-compat 
+    )
+
+
+    # enable usb output, disable uart output
+    pico_enable_stdio_usb(roket_sensor_receive 1)
+    pico_enable_stdio_uart(roket_sensor_receive 0)
+
+    # create map/bin/hex/uf2 file etc.
+    pico_add_extra_outputs(roket_sensor_receive)
 
     # add url via pico_set_program_url
     # example_auto_set_url(hello_world)
@@ -51,9 +84,5 @@ elseif(PICO_ON_DEVICE)
 endif()
 
 
-target_link_libraries(roket_sensor_test 
-    adafruit-mpu6050
-    adafruit-bmp3xx
-    hardware_i2c
-)
+
 
